@@ -2,6 +2,7 @@ package application
 
 import scala.collection.parallel.mutable.ParArray
 import scala.collection.parallel.traversable2ops
+import scala.actors.Futures._
 
 class UrlSpidey(url: String, searcha: String, searchb: String, searchlast: String) extends PrettyPrinter { //Yay Classes!!
 
@@ -67,10 +68,23 @@ class UrlSpidey(url: String, searcha: String, searchb: String, searchlast: Strin
         
       }
     }
-    val theres = a.par.map(getInterestingStuff).toList //Yay Multithreading
+    
+    //using the Mapper class
+    //val mappera = new Mapper (a,getInterestingStuff)
+    //val theres = mappera.pmap.toList
+    
+    //using the built in parallel collection
+    //val theres = a.par.map(getInterestingStuff).toList //Yay Multithreading
+    
+    val input = a.grouped(10).toParArray
+    val splits = input.par.map(url => future {url.map(getInterestingStuff)})
+    val theres = splits.par.flatMap(_()).toList
+    
     def listy(a: ParArray[String]): List[String] = a.toList
-    val theresf = theres.map(listy)
-    val rr = theresf.filter(x => x != List())
+    //val theresf = theres.map(listy)
+    val mapperb = new Mapper (theres,listy)
+    val theresf = mapperb.pmap
+    val rr = theresf.par.filter(x => x != List())
     val r = rr.foldLeft(rr.head)((A, B) => A ::: B)
     r
   }
