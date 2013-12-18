@@ -30,9 +30,6 @@ class ResultPanel(searcha: String, searchb: String, searchc: String, url: String
     println("Below the [balanced] BST you will find a ListView of everything the spider found.")
     println()
     println()
-    println("***Spacing on the graphical [balanced] BST representation is still being perfected in this iteration of the program***")
-    println()
-    println()
     println("The [balanced] BST where each number represents the number of news-bytes found on a linked site:")
     data.PrettyPrinter
 
